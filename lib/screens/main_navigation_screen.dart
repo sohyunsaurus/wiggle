@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'wishes_screen.dart';
 import 'calendar_screen.dart';
 import 'character_collection_screen.dart';
+import 'settings_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -18,6 +19,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     const WishesScreen(),
     const CalendarScreen(),
     const CharacterCollectionScreen(),
+    const SettingsScreen(),
   ];
 
   @override
@@ -71,6 +73,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               icon: Icon(Icons.pets_outlined),
               activeIcon: Icon(Icons.pets),
               label: '컬렉션',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings_outlined),
+              activeIcon: Icon(Icons.settings),
+              label: '설정',
             ),
           ],
         ),
