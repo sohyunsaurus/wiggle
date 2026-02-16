@@ -1,5 +1,8 @@
 // screens/main_navigation_screen.dart
 import 'package:flutter/material.dart';
+import 'package:fluentui_icons/fluentui_icons.dart';
+import '../l10n/app_localizations.dart';
+import '../theme/lavender_theme.dart';
 import 'wishes_screen.dart';
 import 'calendar_screen.dart';
 import 'character_collection_screen.dart';
@@ -24,21 +27,20 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
+      bottomNavigationBar: GlassmorphicContainer(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        borderRadius: BorderRadius.circular(25),
+        blur: 15,
+        opacity: 0.15,
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (index) {
@@ -47,9 +49,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             });
           },
           type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: Theme.of(context).colorScheme.primary,
-          unselectedItemColor: Colors.grey[600],
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          selectedItemColor: const Color(0xFF7C3AED),
+          unselectedItemColor: const Color(0xFF9CA3AF),
           selectedLabelStyle: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 12,
@@ -58,26 +61,28 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             fontWeight: FontWeight.normal,
             fontSize: 12,
           ),
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.auto_awesome_outlined),
-              activeIcon: Icon(Icons.auto_awesome),
-              label: '소원',
+              icon: const Icon(FluentSystemIcons.ic_fluent_star_regular),
+              activeIcon: const Icon(FluentSystemIcons.ic_fluent_star_filled),
+              label: l10n.navWishes,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today_outlined),
-              activeIcon: Icon(Icons.calendar_today),
-              label: '달력',
+              icon: const Icon(FluentSystemIcons.ic_fluent_calendar_regular),
+              activeIcon:
+                  const Icon(FluentSystemIcons.ic_fluent_calendar_filled),
+              label: l10n.navCalendar,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.pets_outlined),
-              activeIcon: Icon(Icons.pets),
-              label: '컬렉션',
+              icon: const Icon(FluentSystemIcons.ic_fluent_heart_regular),
+              activeIcon: const Icon(FluentSystemIcons.ic_fluent_heart_filled),
+              label: l10n.navCollection,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.settings_outlined),
-              activeIcon: Icon(Icons.settings),
-              label: '설정',
+              icon: const Icon(FluentSystemIcons.ic_fluent_settings_regular),
+              activeIcon:
+                  const Icon(FluentSystemIcons.ic_fluent_settings_filled),
+              label: l10n.navSettings,
             ),
           ],
         ),

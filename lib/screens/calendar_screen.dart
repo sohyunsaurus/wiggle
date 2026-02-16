@@ -4,6 +4,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import '../data/database_helper.dart';
 import '../models/wish.dart';
+import '../l10n/app_localizations.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -75,7 +76,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('데이터 로드 중 오류가 발생했습니다: $e')),
+          SnackBar(
+              content:
+                  Text('${AppLocalizations.of(context)!.errorOccurred}: $e')),
         );
       }
     }
@@ -93,9 +96,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Wish Calendar 📅'),
+        title: Text(l10n.wishCalendar),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -243,7 +248,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: _buildMonthlyStats(),
+                  child: _buildMonthlyStats(l10n),
                 ),
 
                 const SizedBox(height: 16),
@@ -256,12 +261,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       return Container(
                         margin: const EdgeInsets.symmetric(horizontal: 16),
                         child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               _selectedDay != null
                                   ? '${DateFormat('M월 d일 (E)', 'ko_KR').format(_selectedDay!)} - ${wishes.length}개의 소원'
-                                  : '날짜를 선택해주세요',
+                                  : l10n.noWishesThisDay,
                               style: Theme.of(context)
                                   .textTheme
                                   .titleMedium
@@ -284,7 +290,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                           ),
                                           const SizedBox(height: 8),
                                           Text(
-                                            '이 날에는 소원이 없어요',
+                                            l10n.noWishesThisDay,
                                             style: TextStyle(
                                               color: Colors.grey[600],
                                               fontSize: 16,
@@ -312,7 +318,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  Widget _buildMonthlyStats() {
+  Widget _buildMonthlyStats(AppLocalizations l10n) {
     final currentMonth = DateTime(_focusedDay.year, _focusedDay.month);
     final monthWishes = _wishEvents.entries
         .where((entry) =>
@@ -330,19 +336,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         _buildStatItem(
-          '총 소원',
+          l10n.totalWishes,
           '$totalWishes개',
           Icons.auto_awesome,
           Theme.of(context).colorScheme.primary,
         ),
         _buildStatItem(
-          '이뤄진 소원',
+          l10n.fulfilledWishes,
           '$fulfilledWishes개',
           Icons.star,
           Colors.amber,
         ),
         _buildStatItem(
-          '활동일',
+          l10n.activeDays,
           '$activeDays일',
           Icons.calendar_today,
           Colors.green,

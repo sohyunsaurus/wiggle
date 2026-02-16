@@ -1,6 +1,7 @@
 // screens/wishes_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:intl/intl.dart';
 import '../blocs/wishes/wishes_bloc.dart';
 import '../blocs/wishes/wishes_event.dart';
@@ -9,16 +10,23 @@ import '../models/wish.dart';
 import '../widgets/character_unlock_dialog.dart';
 import '../widgets/wish_card.dart';
 import '../widgets/progress_indicator_widget.dart';
+import '../l10n/app_localizations.dart';
+import '../theme/lavender_theme.dart';
 
 class WishesScreen extends StatelessWidget {
   const WishesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title:
-            Text('Make a Wish ✨ ${DateFormat('M/d').format(DateTime.now())}'),
+        title: Text(
+            '${l10n.makeWishTitle} ${DateFormat('M/d').format(DateTime.now())}'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: BlocConsumer<WishesBloc, WishesState>(
         listener: (context, state) {
@@ -41,14 +49,15 @@ class WishesScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error, size: 64, color: Colors.red),
+                  Icon(FluentSystemIcons.ic_fluent_error_circle_regular,
+                      size: 64, color: const Color(0xFFEF4444)),
                   const SizedBox(height: 16),
-                  Text('오류가 발생했습니다: ${state.message}'),
+                  Text('${l10n.errorOccurred}: ${state.message}'),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () =>
                         context.read<WishesBloc>().add(LoadTodayWishes()),
-                    child: const Text('다시 시도'),
+                    child: Text(l10n.tryAgain),
                   ),
                 ],
               ),
@@ -88,7 +97,7 @@ class WishesScreen extends StatelessWidget {
                 // Wishes list
                 Expanded(
                   child: wishes.isEmpty
-                      ? _buildEmptyState(context)
+                      ? _buildEmptyState(context, l10n)
                       : ListView.builder(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           itemCount: wishes.length,
@@ -107,8 +116,10 @@ class WishesScreen extends StatelessWidget {
                                       .add(UnfulfillWish(wishId: wish.id!));
                                 }
                               },
-                              onDelete: () => _showDeleteDialog(context, wish),
-                              onEdit: () => _showEditWishDialog(context, wish),
+                              onDelete: () =>
+                                  _showDeleteDialog(context, wish, l10n),
+                              onEdit: () =>
+                                  _showEditWishDialog(context, wish, l10n),
                             );
                           },
                         ),
@@ -120,36 +131,44 @@ class WishesScreen extends StatelessWidget {
           return const SizedBox.shrink();
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddWishDialog(context),
-        icon: const Icon(Icons.auto_awesome),
-        label: const Text('New Wish'),
+      floatingActionButton: GlassmorphicContainer(
+        padding: const EdgeInsets.all(16),
+        borderRadius: BorderRadius.circular(20),
+        child: FloatingActionButton.extended(
+          onPressed: () => _showAddWishDialog(context, l10n),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          icon: const Icon(FluentSystemIcons.ic_fluent_star_add_regular,
+              color: Color(0xFF7C3AED)),
+          label: Text(l10n.newWish,
+              style: const TextStyle(color: Color(0xFF7C3AED))),
+        ),
       ),
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildEmptyState(BuildContext context, AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.auto_awesome_outlined,
+            FluentSystemIcons.ic_fluent_star_regular,
             size: 80,
-            color: Colors.grey[400],
+            color: const Color(0xFFB794F6),
           ),
           const SizedBox(height: 16),
           Text(
-            'No wishes yet today',
+            l10n.noWishesToday,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Colors.grey[600],
+                  color: const Color(0xFF6B46C1),
                 ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Tap the button below to make your first wish! ✨',
+            l10n.tapToMakeWish,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[500],
+                  color: const Color(0xFF9CA3AF),
                 ),
             textAlign: TextAlign.center,
           ),
@@ -158,15 +177,17 @@ class WishesScreen extends StatelessWidget {
     );
   }
 
-  void _showAddWishDialog(BuildContext context) {
-    _showWishDialog(context, null);
+  void _showAddWishDialog(BuildContext context, AppLocalizations l10n) {
+    _showWishDialog(context, null, l10n);
   }
 
-  void _showEditWishDialog(BuildContext context, Wish wish) {
-    _showWishDialog(context, wish);
+  void _showEditWishDialog(
+      BuildContext context, Wish wish, AppLocalizations l10n) {
+    _showWishDialog(context, wish, l10n);
   }
 
-  void _showWishDialog(BuildContext context, Wish? existingWish) {
+  void _showWishDialog(
+      BuildContext context, Wish? existingWish, AppLocalizations l10n) {
     final whatController =
         TextEditingController(text: existingWish?.what ?? '');
     final whyController = TextEditingController(text: existingWish?.why ?? '');
@@ -184,65 +205,66 @@ class WishesScreen extends StatelessWidget {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: Text(existingWish == null ? 'Make a Wish ✨' : 'Edit Wish ✨'),
+          title:
+              Text(existingWish == null ? l10n.makeWishTitle : l10n.editWish),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: whatController,
-                  decoration: const InputDecoration(
-                    labelText: 'What do you wish for? *',
-                    hintText: 'I wish to...',
+                  decoration: InputDecoration(
+                    labelText: l10n.whatWish,
+                    hintText: l10n.whatHint,
                   ),
                   maxLines: 2,
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: whyController,
-                  decoration: const InputDecoration(
-                    labelText: 'Why is this important?',
-                    hintText: 'Because...',
+                  decoration: InputDecoration(
+                    labelText: l10n.whyImportant,
+                    hintText: l10n.whyHint,
                   ),
                   maxLines: 2,
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: whenController,
-                  decoration: const InputDecoration(
-                    labelText: 'When do you want this?',
-                    hintText: 'By next month...',
+                  decoration: InputDecoration(
+                    labelText: l10n.whenWant,
+                    hintText: l10n.whenHint,
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: whereController,
-                  decoration: const InputDecoration(
-                    labelText: 'Where will this happen?',
-                    hintText: 'At home, work...',
+                  decoration: InputDecoration(
+                    labelText: l10n.whereHappen,
+                    hintText: l10n.whereHint,
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: whoController,
-                  decoration: const InputDecoration(
-                    labelText: 'Who is involved?',
-                    hintText: 'Me, my family...',
+                  decoration: InputDecoration(
+                    labelText: l10n.whoInvolved,
+                    hintText: l10n.whoHint,
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: howController,
-                  decoration: const InputDecoration(
-                    labelText: 'How will you make it happen?',
-                    hintText: 'By working hard...',
+                  decoration: InputDecoration(
+                    labelText: l10n.howMakeHappen,
+                    hintText: l10n.howHint,
                   ),
                   maxLines: 2,
                 ),
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    const Text('Importance: '),
+                    Text('${l10n.importance}: '),
                     Expanded(
                       child: Slider(
                         value: importance.toDouble(),
@@ -261,18 +283,23 @@ class WishesScreen extends StatelessWidget {
                 ),
                 DropdownButtonFormField<String>(
                   value: category,
-                  decoration: const InputDecoration(labelText: 'Category'),
-                  items: const [
+                  decoration: InputDecoration(labelText: l10n.category),
+                  items: [
                     DropdownMenuItem(
-                        value: 'personal', child: Text('Personal')),
-                    DropdownMenuItem(value: 'career', child: Text('Career')),
-                    DropdownMenuItem(value: 'health', child: Text('Health')),
+                        value: 'personal', child: Text(l10n.categoryPersonal)),
                     DropdownMenuItem(
-                        value: 'relationships', child: Text('Relationships')),
+                        value: 'career', child: Text(l10n.categoryCareer)),
                     DropdownMenuItem(
-                        value: 'financial', child: Text('Financial')),
+                        value: 'health', child: Text(l10n.categoryHealth)),
                     DropdownMenuItem(
-                        value: 'spiritual', child: Text('Spiritual')),
+                        value: 'relationships',
+                        child: Text(l10n.categoryRelationships)),
+                    DropdownMenuItem(
+                        value: 'financial',
+                        child: Text(l10n.categoryFinancial)),
+                    DropdownMenuItem(
+                        value: 'spiritual',
+                        child: Text(l10n.categorySpiritual)),
                   ],
                   onChanged: (value) {
                     setState(() {
@@ -286,14 +313,13 @@ class WishesScreen extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             ElevatedButton(
               onPressed: () {
                 if (whatController.text.trim().isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Please enter what you wish for')),
+                    SnackBar(content: Text(l10n.pleaseEnterWish)),
                   );
                   return;
                 }
@@ -321,7 +347,8 @@ class WishesScreen extends StatelessWidget {
 
                 Navigator.pop(context);
               },
-              child: Text(existingWish == null ? 'Make Wish' : 'Update Wish'),
+              child:
+                  Text(existingWish == null ? l10n.makeWish : l10n.updateWish),
             ),
           ],
         ),
@@ -329,16 +356,17 @@ class WishesScreen extends StatelessWidget {
     );
   }
 
-  void _showDeleteDialog(BuildContext context, Wish wish) {
+  void _showDeleteDialog(
+      BuildContext context, Wish wish, AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Wish'),
+        title: Text(l10n.delete),
         content: Text('Are you sure you want to delete "${wish.what}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -346,7 +374,7 @@ class WishesScreen extends StatelessWidget {
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),

@@ -1,6 +1,13 @@
 // screens/settings_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluentui_icons/fluentui_icons.dart';
 import '../data/database_helper.dart';
+import '../l10n/app_localizations.dart';
+import '../blocs/language/language_bloc.dart';
+import '../blocs/language/language_event.dart';
+import '../blocs/language/language_state.dart';
+import '../theme/lavender_theme.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -10,32 +17,52 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _isLoading = false;
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('설정 ⚙️'),
+        title: Text(l10n.settings),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           // App Info Section
-          _buildSectionHeader('앱 정보'),
-          _buildInfoCard(),
+          _buildSectionHeader(l10n.appInfo),
+          GlassmorphicContainer(
+            margin: const EdgeInsets.only(bottom: 24),
+            padding: const EdgeInsets.all(20),
+            child: _buildInfoCard(l10n),
+          ),
 
-          const SizedBox(height: 24),
+          // Language Section
+          _buildSectionHeader(l10n.language),
+          GlassmorphicContainer(
+            margin: const EdgeInsets.only(bottom: 24),
+            padding: const EdgeInsets.all(4),
+            child: _buildLanguageCard(l10n),
+          ),
 
           // Data Management Section
-          _buildSectionHeader('데이터 관리'),
-          _buildDataManagementCard(),
-
-          const SizedBox(height: 24),
+          _buildSectionHeader(l10n.dataManagement),
+          GlassmorphicContainer(
+            margin: const EdgeInsets.only(bottom: 24),
+            padding: const EdgeInsets.all(4),
+            child: _buildDataManagementCard(l10n),
+          ),
 
           // Danger Zone
-          _buildSectionHeader('위험 구역', color: Colors.red),
-          _buildDangerZoneCard(),
+          _buildSectionHeader(l10n.dangerZone, color: const Color(0xFFEF4444)),
+          GlassmorphicContainer(
+            padding: const EdgeInsets.all(4),
+            color: const Color(0xFFEF4444),
+            opacity: 0.05,
+            child: _buildDangerZoneCard(l10n),
+          ),
         ],
       ),
     );
@@ -54,47 +81,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildInfoCard() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildInfoCard(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
           children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.auto_awesome,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 24,
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Make a Wish ✨',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ],
+            Icon(
+              FluentSystemIcons.ic_fluent_star_filled,
+              color: const Color(0xFF9C88FF),
+              size: 24,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(width: 12),
             Text(
-              '매일 소원을 만들고 귀여운 타마고치 친구들을 모아보세요!',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[600],
+              l10n.appTitle,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                _buildInfoItem('버전', '1.0.0'),
-                const SizedBox(width: 24),
-                _buildInfoItem('개발자', 'sohyunsaurus'),
-              ],
             ),
           ],
         ),
-      ),
+        const SizedBox(height: 12),
+        Text(
+          l10n.appDescription,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: const Color(0xFF6B7280),
+              ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            _buildInfoItem(l10n.version, '1.0.0'),
+            const SizedBox(width: 24),
+            _buildInfoItem(l10n.developer, 'sohyunsaurus'),
+          ],
+        ),
+      ],
     );
   }
 
@@ -106,7 +128,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           label,
           style: TextStyle(
             fontSize: 12,
-            color: Colors.grey[600],
+            color: const Color(0xFF9CA3AF),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -122,37 +144,105 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildDataManagementCard() {
+  Widget _buildLanguageCard(AppLocalizations l10n) {
+    return BlocBuilder<LanguageBloc, LanguageState>(
+      builder: (context, state) {
+        String currentLanguage = 'ko';
+        if (state is LanguageLoaded) {
+          currentLanguage = state.locale.languageCode;
+        }
+
+        return Card(
+          child: ListTile(
+            leading: const Icon(Icons.language, color: Colors.blue),
+            title: Text(l10n.language),
+            subtitle:
+                Text(currentLanguage == 'ko' ? l10n.korean : l10n.english),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _showLanguageDialog(l10n, currentLanguage),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showLanguageDialog(AppLocalizations l10n, String currentLanguage) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.selectLanguage),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<String>(
+              title: Text(l10n.korean),
+              value: 'ko',
+              groupValue: currentLanguage,
+              onChanged: (value) {
+                if (value != null) {
+                  context
+                      .read<LanguageBloc>()
+                      .add(ChangeLanguage(languageCode: value));
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            RadioListTile<String>(
+              title: Text(l10n.english),
+              value: 'en',
+              groupValue: currentLanguage,
+              onChanged: (value) {
+                if (value != null) {
+                  context
+                      .read<LanguageBloc>()
+                      .add(ChangeLanguage(languageCode: value));
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDataManagementCard(AppLocalizations l10n) {
     return Card(
       child: Column(
         children: [
           ListTile(
             leading: const Icon(Icons.backup, color: Colors.blue),
-            title: const Text('데이터 백업'),
-            subtitle: const Text('소원과 캐릭터 데이터를 백업합니다'),
+            title: Text(l10n.dataBackup),
+            subtitle: Text(l10n.backupDescription),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              _showComingSoonDialog('데이터 백업');
+              _showComingSoonDialog(l10n.dataBackup, l10n);
             },
           ),
           const Divider(height: 1),
           ListTile(
             leading: const Icon(Icons.restore, color: Colors.green),
-            title: const Text('데이터 복원'),
-            subtitle: const Text('백업된 데이터를 복원합니다'),
+            title: Text(l10n.dataRestore),
+            subtitle: Text(l10n.restoreDescription),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              _showComingSoonDialog('데이터 복원');
+              _showComingSoonDialog(l10n.dataRestore, l10n);
             },
           ),
           const Divider(height: 1),
           ListTile(
             leading: const Icon(Icons.analytics, color: Colors.orange),
-            title: const Text('통계 보기'),
-            subtitle: const Text('상세한 소원 달성 통계를 확인합니다'),
+            title: Text(l10n.viewStats),
+            subtitle: Text(l10n.statsDescription),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              _showStatsDialog();
+              _showStatsDialog(l10n);
             },
           ),
         ],
@@ -160,69 +250,68 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildDangerZoneCard() {
+  Widget _buildDangerZoneCard(AppLocalizations l10n) {
     return Card(
       color: Colors.red.withValues(alpha: 0.05),
       child: Column(
         children: [
           ListTile(
             leading: const Icon(Icons.delete_forever, color: Colors.red),
-            title: const Text(
-              '모든 소원 삭제',
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
+            title: Text(
+              l10n.deleteAllWishes,
+              style: const TextStyle(
+                  color: Colors.red, fontWeight: FontWeight.w600),
             ),
-            subtitle: const Text('모든 소원 기록을 삭제합니다 (복구 불가능)'),
+            subtitle: Text(l10n.deleteWishesDescription),
             trailing: const Icon(Icons.chevron_right, color: Colors.red),
-            onTap: _showDeleteWishesDialog,
+            onTap: () => _showDeleteWishesDialog(l10n),
           ),
           const Divider(height: 1),
           ListTile(
             leading: const Icon(Icons.pets_outlined, color: Colors.red),
-            title: const Text(
-              '모든 캐릭터 삭제',
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
+            title: Text(
+              l10n.deleteAllCharacters,
+              style: const TextStyle(
+                  color: Colors.red, fontWeight: FontWeight.w600),
             ),
-            subtitle: const Text('모든 타마고치 컬렉션을 삭제합니다 (복구 불가능)'),
+            subtitle: Text(l10n.deleteCharactersDescription),
             trailing: const Icon(Icons.chevron_right, color: Colors.red),
-            onTap: _showDeleteCharactersDialog,
+            onTap: () => _showDeleteCharactersDialog(l10n),
           ),
           const Divider(height: 1),
           ListTile(
             leading: const Icon(Icons.delete_sweep, color: Colors.red),
-            title: const Text(
-              '모든 데이터 삭제',
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            title: Text(
+              l10n.deleteAllData,
+              style: const TextStyle(
+                  color: Colors.red, fontWeight: FontWeight.bold),
             ),
-            subtitle: const Text('앱의 모든 데이터를 완전히 삭제합니다 (복구 불가능)'),
+            subtitle: Text(l10n.deleteAllDataDescription),
             trailing: const Icon(Icons.chevron_right, color: Colors.red),
-            onTap: _showDeleteAllDataDialog,
+            onTap: () => _showDeleteAllDataDialog(l10n),
           ),
         ],
       ),
     );
   }
 
-  void _showComingSoonDialog(String feature) {
+  void _showComingSoonDialog(String feature, AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('$feature 🚧'),
-        content: const Text('이 기능은 곧 추가될 예정입니다!'),
+        title: Text('$feature ${l10n.comingSoon}'),
+        content: Text(l10n.featureComingSoon),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('확인'),
+            child: Text(l10n.confirm),
           ),
         ],
       ),
     );
   }
 
-  void _showStatsDialog() async {
-    setState(() {
-      _isLoading = true;
-    });
-
+  void _showStatsDialog(AppLocalizations l10n) async {
     try {
       final db = await DatabaseHelper.instance.database;
 
@@ -246,25 +335,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final wishStats = wishesResult.first;
       final charStats = charactersResult.first;
 
-      setState(() {
-        _isLoading = false;
-      });
-
       if (mounted) {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('📊 나의 통계'),
+            title: Text(l10n.myStatistics),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildStatRow('총 소원 개수', '${wishStats['total_wishes']}개'),
-                _buildStatRow('이뤄진 소원', '${wishStats['fulfilled_wishes']}개'),
-                _buildStatRow('활동일', '${wishStats['active_days']}일'),
+                _buildStatRow(
+                    l10n.totalWishesCount, '${wishStats['total_wishes']}개'),
+                _buildStatRow(l10n.fulfilledWishesCount,
+                    '${wishStats['fulfilled_wishes']}개'),
+                _buildStatRow(
+                    l10n.activeDaysCount, '${wishStats['active_days']}일'),
                 const Divider(),
-                _buildStatRow('모은 캐릭터', '${charStats['total_characters']}개'),
-                _buildStatRow('황금 캐릭터', '${charStats['golden_characters']}개'),
+                _buildStatRow(l10n.collectedCharacters,
+                    '${charStats['total_characters']}개'),
+                _buildStatRow(l10n.goldenCharacters,
+                    '${charStats['golden_characters']}개'),
                 const SizedBox(height: 12),
                 if ((wishStats['total_wishes'] as int) > 0)
                   Container(
@@ -282,7 +372,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            '달성률: ${((wishStats['fulfilled_wishes'] as int) / (wishStats['total_wishes'] as int) * 100).round()}%',
+                            '${l10n.achievementRate}: ${((wishStats['fulfilled_wishes'] as int) / (wishStats['total_wishes'] as int) * 100).round()}%',
                             style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                         ),
@@ -294,19 +384,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('확인'),
+                child: Text(l10n.confirm),
               ),
             ],
           ),
         );
       }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('통계를 불러오는 중 오류가 발생했습니다: $e')),
+          SnackBar(content: Text('${l10n.loadingStatsError}: $e')),
         );
       }
     }
@@ -328,126 +415,126 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _showDeleteWishesDialog() {
+  void _showDeleteWishesDialog(AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.warning, color: Colors.red),
-            SizedBox(width: 8),
-            Text('소원 삭제 확인'),
+            const Icon(Icons.warning, color: Colors.red),
+            const SizedBox(width: 8),
+            Text(l10n.deleteAllWishes),
           ],
         ),
-        content: const Text(
-          '모든 소원 기록을 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.',
-          style: TextStyle(height: 1.5),
+        content: Text(
+          l10n.deleteWishesConfirm,
+          style: const TextStyle(height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('취소'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              _deleteWishes();
+              _deleteWishes(l10n);
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('삭제'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
     );
   }
 
-  void _showDeleteCharactersDialog() {
+  void _showDeleteCharactersDialog(AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.warning, color: Colors.red),
-            SizedBox(width: 8),
-            Text('캐릭터 삭제 확인'),
+            const Icon(Icons.warning, color: Colors.red),
+            const SizedBox(width: 8),
+            Text(l10n.deleteAllCharacters),
           ],
         ),
-        content: const Text(
-          '모든 타마고치 캐릭터를 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.',
-          style: TextStyle(height: 1.5),
+        content: Text(
+          l10n.deleteCharactersConfirm,
+          style: const TextStyle(height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('취소'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              _deleteCharacters();
+              _deleteCharacters(l10n);
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('삭제'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
     );
   }
 
-  void _showDeleteAllDataDialog() {
+  void _showDeleteAllDataDialog(AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.delete_sweep, color: Colors.red),
-            SizedBox(width: 8),
-            Text('전체 데이터 삭제'),
+            const Icon(Icons.delete_sweep, color: Colors.red),
+            const SizedBox(width: 8),
+            Text(l10n.deleteAllData),
           ],
         ),
-        content: const Text(
-          '정말로 모든 데이터를 삭제하시겠습니까?\n\n• 모든 소원 기록\n• 모든 타마고치 캐릭터\n• 모든 설정\n\n이 작업은 절대 되돌릴 수 없습니다!',
-          style: TextStyle(height: 1.5),
+        content: Text(
+          l10n.deleteAllDataConfirm,
+          style: const TextStyle(height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('취소'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              _showFinalConfirmationDialog();
+              _showFinalConfirmationDialog(l10n);
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('삭제'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
     );
   }
 
-  void _showFinalConfirmationDialog() {
+  void _showFinalConfirmationDialog(AppLocalizations l10n) {
     final TextEditingController confirmController = TextEditingController();
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('⚠️ 최종 확인'),
+        title: Text(l10n.finalConfirmation),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '정말로 모든 데이터를 삭제하려면 아래에 "삭제"를 입력하세요:',
-              style: TextStyle(height: 1.5),
+            Text(
+              l10n.typeDeleteToConfirm,
+              style: const TextStyle(height: 1.5),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: confirmController,
-              decoration: const InputDecoration(
-                hintText: '삭제',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: l10n.deleteText,
+                border: const OutlineInputBorder(),
               ),
             ),
           ],
@@ -455,18 +542,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('취소'),
+            child: Text(l10n.cancel),
           ),
           StatefulBuilder(
             builder: (context, setState) => ElevatedButton(
-              onPressed: confirmController.text == '삭제'
+              onPressed: confirmController.text == l10n.deleteText
                   ? () {
                       Navigator.pop(context);
-                      _deleteAllData();
+                      _deleteAllData(l10n);
                     }
                   : null,
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text('모든 데이터 삭제'),
+              child: Text(l10n.deleteAllData),
             ),
           ),
         ],
@@ -474,93 +561,63 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Future<void> _deleteWishes() async {
-    setState(() {
-      _isLoading = true;
-    });
-
+  Future<void> _deleteWishes(AppLocalizations l10n) async {
     try {
       final db = await DatabaseHelper.instance.database;
       await db.delete('wishes');
 
-      setState(() {
-        _isLoading = false;
-      });
-
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('모든 소원이 삭제되었습니다'),
+          SnackBar(
+            content: Text(l10n.allWishesDeleted),
             backgroundColor: Colors.green,
           ),
         );
       }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('삭제 중 오류가 발생했습니다: $e')),
+          SnackBar(content: Text('${l10n.deletionError}: $e')),
         );
       }
     }
   }
 
-  Future<void> _deleteCharacters() async {
-    setState(() {
-      _isLoading = true;
-    });
-
+  Future<void> _deleteCharacters(AppLocalizations l10n) async {
     try {
       final db = await DatabaseHelper.instance.database;
       await db.delete('character_collection');
 
-      setState(() {
-        _isLoading = false;
-      });
-
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('모든 캐릭터가 삭제되었습니다'),
+          SnackBar(
+            content: Text(l10n.allCharactersDeleted),
             backgroundColor: Colors.green,
           ),
         );
       }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('삭제 중 오류가 발생했습니다: $e')),
+          SnackBar(content: Text('${l10n.deletionError}: $e')),
         );
       }
     }
   }
 
-  Future<void> _deleteAllData() async {
-    setState(() {
-      _isLoading = true;
-    });
-
+  Future<void> _deleteAllData(AppLocalizations l10n) async {
     try {
       await DatabaseHelper.instance.resetDatabase();
 
-      setState(() {
-        _isLoading = false;
-      });
-
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('모든 데이터가 삭제되었습니다'),
+          SnackBar(
+            content: Text(l10n.allDataDeleted),
             backgroundColor: Colors.green,
           ),
         );
 
-        // 잠시 후 앱 재시작을 권장하는 다이얼로그
+        // Show restart recommendation dialog
         Future.delayed(const Duration(seconds: 1), () {
           if (mounted) {
             showDialog(
@@ -568,14 +625,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               barrierDismissible: false,
               builder: (context) => AlertDialog(
                 title: const Text('✅ 완료'),
-                content: const Text('모든 데이터가 삭제되었습니다.\n앱을 재시작하는 것을 권장합니다.'),
+                content: Text(l10n.restartRecommended),
                 actions: [
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      Navigator.pop(context); // 설정 화면 닫기
+                      Navigator.pop(context); // Close settings screen
                     },
-                    child: const Text('확인'),
+                    child: Text(l10n.confirm),
                   ),
                 ],
               ),
@@ -584,12 +641,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         });
       }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('삭제 중 오류가 발생했습니다: $e')),
+          SnackBar(content: Text('${l10n.deletionError}: $e')),
         );
       }
     }

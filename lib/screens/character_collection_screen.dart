@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../data/database_helper.dart';
 import '../models/character.dart';
+import '../l10n/app_localizations.dart';
 
 class CharacterCollectionScreen extends StatefulWidget {
   const CharacterCollectionScreen({super.key});
@@ -42,20 +43,22 @@ class _CharacterCollectionScreenState extends State<CharacterCollectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Tamagotchi Collection ✨'),
+        title: Text(l10n.myCollection),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : characters.isEmpty
-              ? _buildEmptyState()
+              ? _buildEmptyState(l10n)
               : _buildCharacterGrid(),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -67,14 +70,14 @@ class _CharacterCollectionScreenState extends State<CharacterCollectionScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No tamagotchi friends yet',
+            l10n.noFriendsYet,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: Colors.grey[600],
                 ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Fulfill your wishes to unlock adorable companions! ✨',
+            l10n.fulfillWishesToUnlock,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.grey[500],
                 ),
@@ -83,7 +86,7 @@ class _CharacterCollectionScreenState extends State<CharacterCollectionScreen> {
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Make Wishes'),
+            child: Text(l10n.makeWishes),
           ),
         ],
       ),
@@ -102,14 +105,14 @@ class _CharacterCollectionScreenState extends State<CharacterCollectionScreen> {
       itemCount: characters.length,
       itemBuilder: (context, index) {
         final character = characters[index];
-        return _buildCharacterCard(character);
+        return _buildCharacterCard(character, AppLocalizations.of(context)!);
       },
     );
   }
 
-  Widget _buildCharacterCard(Character character) {
+  Widget _buildCharacterCard(Character character, AppLocalizations l10n) {
     return GestureDetector(
-      onTap: () => _showCharacterDetails(character),
+      onTap: () => _showCharacterDetails(character, l10n),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -252,7 +255,7 @@ class _CharacterCollectionScreenState extends State<CharacterCollectionScreen> {
     }
   }
 
-  void _showCharacterDetails(Character character) {
+  void _showCharacterDetails(Character character, AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -275,21 +278,21 @@ class _CharacterCollectionScreenState extends State<CharacterCollectionScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            Text('Collected: ${character.date}'),
-            Text('Rarity: ${character.rarity}'),
-            Text('Evolution: ${character.evolutionStage}'),
+            Text('${l10n.collectedOn}: ${character.date}'),
+            Text('${l10n.rarity}: ${character.rarity}'),
+            Text('${l10n.evolution}: ${character.evolutionStage}'),
             const SizedBox(height: 12),
-            Text('Stats:', style: Theme.of(context).textTheme.titleSmall),
+            Text(l10n.stats, style: Theme.of(context).textTheme.titleSmall),
             Row(
               children: [
-                const Icon(Icons.favorite, color: Colors.red, size: 16),
-                Text(' Happiness: ${character.happiness}/100'),
+                const Icon(Icons.favorite, color: Color(0xFFEF4444), size: 16),
+                Text(' ${l10n.happiness}: ${character.happiness}/100'),
               ],
             ),
             Row(
               children: [
-                const Icon(Icons.flash_on, color: Colors.blue, size: 16),
-                Text(' Energy: ${character.energy}/100'),
+                const Icon(Icons.flash_on, color: Color(0xFF3B82F6), size: 16),
+                Text(' ${l10n.energy}: ${character.energy}/100'),
               ],
             ),
             if (character.isGolden) ...[
@@ -301,14 +304,14 @@ class _CharacterCollectionScreenState extends State<CharacterCollectionScreen> {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.amber),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(Icons.star, color: Colors.amber, size: 16),
-                    SizedBox(width: 8),
+                    const Icon(Icons.star, color: Colors.amber, size: 16),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'This companion glows golden because all related wishes have been fulfilled! ✨',
-                        style: TextStyle(
+                        l10n.goldenMessage,
+                        style: const TextStyle(
                           color: Colors.amber,
                           fontWeight: FontWeight.w600,
                           fontSize: 12,
@@ -328,7 +331,7 @@ class _CharacterCollectionScreenState extends State<CharacterCollectionScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(l10n.close),
           ),
         ],
       ),
