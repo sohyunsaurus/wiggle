@@ -1,6 +1,5 @@
 // screens/main_navigation_screen.dart
 import 'package:flutter/material.dart';
-import 'package:fluentui_icons/fluentui_icons.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/lavender_theme.dart';
 import 'wishes_screen.dart';
@@ -30,7 +29,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: const Color(0xFFF5F3FF), // 아주 연한 라벤더
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,
@@ -63,25 +62,67 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
           items: [
             BottomNavigationBarItem(
-              icon: const Icon(FluentSystemIcons.ic_fluent_star_regular),
-              activeIcon: const Icon(FluentSystemIcons.ic_fluent_star_filled),
+              icon: Image.asset(
+                'assets/wish.png',
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+              ),
+              activeIcon: Image.asset(
+                'assets/wish.png',
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+                color: const Color(0xFF7C3AED),
+              ),
               label: l10n.navWishes,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(FluentSystemIcons.ic_fluent_calendar_regular),
-              activeIcon:
-                  const Icon(FluentSystemIcons.ic_fluent_calendar_filled),
+              icon: Image.asset(
+                'assets/calendar.png',
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+              ),
+              activeIcon: Image.asset(
+                'assets/calendar.png',
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+                color: const Color(0xFF7C3AED),
+              ),
               label: l10n.navCalendar,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(FluentSystemIcons.ic_fluent_heart_regular),
-              activeIcon: const Icon(FluentSystemIcons.ic_fluent_heart_filled),
+              icon: Image.asset(
+                'assets/collection.png',
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+              ),
+              activeIcon: Image.asset(
+                'assets/collection.png',
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+                color: const Color(0xFF7C3AED),
+              ),
               label: l10n.navCollection,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(FluentSystemIcons.ic_fluent_settings_regular),
-              activeIcon:
-                  const Icon(FluentSystemIcons.ic_fluent_settings_filled),
+              icon: Image.asset(
+                'assets/setting.png',
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+              ),
+              activeIcon: Image.asset(
+                'assets/setting.png',
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+                color: const Color(0xFF7C3AED),
+              ),
               label: l10n.navSettings,
             ),
           ],
