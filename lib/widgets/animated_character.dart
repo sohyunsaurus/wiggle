@@ -36,6 +36,8 @@ class _AnimatedCharacterState extends State<AnimatedCharacter>
   final double speed = 1.0;
   final Duration movementDuration = const Duration(seconds: 3);
   late DateTime lastDirectionChangeTime;
+  final double leftPadding = 20;
+  final double bottomPadding = 20;
 
   @override
   void initState() {
@@ -46,9 +48,13 @@ class _AnimatedCharacterState extends State<AnimatedCharacter>
     final height =
         widget.containerSize.height > 0 ? widget.containerSize.height : 300;
 
+    // 패딩을 고려한 범위 계산
+    final playableWidth = width - leftPadding;
+    final playableHeight = height - bottomPadding;
+
     currentPosition = Offset(
-      width / 2 - characterSize / 2,
-      height / 2 - characterSize / 2,
+      leftPadding + (playableWidth / 2) - (characterSize / 2),
+      (playableHeight / 2) - (characterSize / 2),
     );
     currentDirection = CharacterDirection.south;
     lastDirectionChangeTime = DateTime.now();
@@ -135,15 +141,16 @@ class _AnimatedCharacterState extends State<AnimatedCharacter>
         break;
     }
 
-    // 경계 체크
+    // 경계 체크 (패딩 고려)
     final maxWidth =
         widget.containerSize.width > 0 ? widget.containerSize.width : 300;
     final maxHeight =
         widget.containerSize.height > 0 ? widget.containerSize.height : 300;
 
+    // 왼쪽 패딩과 아래 패딩을 고려한 범위
     newPosition = Offset(
-      newPosition.dx.clamp(0, maxWidth - characterSize),
-      newPosition.dy.clamp(0, maxHeight - characterSize),
+      newPosition.dx.clamp(leftPadding, maxWidth - characterSize),
+      newPosition.dy.clamp(0, maxHeight - bottomPadding - characterSize),
     );
 
     currentPosition = newPosition;
