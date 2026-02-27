@@ -1,7 +1,6 @@
 // screens/wishes_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:intl/intl.dart';
 import '../blocs/wishes/wishes_bloc.dart';
 import '../blocs/wishes/wishes_event.dart';
@@ -45,12 +44,6 @@ class _WishesScreenState extends State<WishesScreen>
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: Text(
-            '${l10n.makeWishTitle} ${DateFormat('M/d').format(DateTime.now())}'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
       body: BlocConsumer<WishesBloc, WishesState>(
         listener: (context, state) {
           if (state is WishFulfilled && state.unlockedCharacter != null) {
@@ -72,8 +65,8 @@ class _WishesScreenState extends State<WishesScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(FluentSystemIcons.ic_fluent_error_circle_regular,
-                      size: 64, color: const Color(0xFFEF4444)),
+                  const Icon(Icons.error_outline,
+                      size: 64, color: Color(0xFFEF4444)),
                   const SizedBox(height: 16),
                   Text('${l10n.errorOccurred}: ${state.message}'),
                   const SizedBox(height: 16),
@@ -177,8 +170,12 @@ class _WishesScreenState extends State<WishesScreen>
           onPressed: () => _showAddWishDialog(context, l10n),
           backgroundColor: Colors.transparent,
           elevation: 0,
-          icon: const Icon(FluentSystemIcons.ic_fluent_star_add_regular,
-              color: Color(0xFF7C3AED)),
+          icon: Image.asset(
+            'assets/tea.png',
+            width: 24,
+            height: 24,
+            fit: BoxFit.contain,
+          ),
           label: Text(l10n.newWish,
               style: const TextStyle(color: Color(0xFF7C3AED))),
         ),
@@ -191,10 +188,10 @@ class _WishesScreenState extends State<WishesScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            FluentSystemIcons.ic_fluent_star_regular,
+          const Icon(
+            Icons.star_outline,
             size: 80,
-            color: const Color(0xFFB794F6),
+            color: Color(0xFFB794F6),
           ),
           const SizedBox(height: 16),
           Text(
