@@ -10,6 +10,7 @@ import '../models/wish.dart';
 import '../widgets/character_unlock_dialog.dart';
 import '../widgets/wish_card.dart';
 import '../widgets/progress_indicator_widget.dart';
+import '../widgets/animated_character.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/lavender_theme.dart';
 
@@ -93,17 +94,33 @@ class WishesScreen extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                    child: Stack(
                       children: [
-                        Container(
-                          margin: const EdgeInsets.all(16),
-                          child: ProgressIndicatorWidget(
-                            completed: fulfilledCount,
-                            total: totalCount,
-                            streak: streak,
-                            canUnlock: canUnlock,
-                          ),
+                        // Character animation
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            return AnimatedCharacter(
+                              containerSize: Size(
+                                constraints.maxWidth,
+                                constraints.maxHeight,
+                              ),
+                            );
+                          },
+                        ),
+                        // Progress indicator at bottom
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.all(16),
+                              child: ProgressIndicatorWidget(
+                                completed: fulfilledCount,
+                                total: totalCount,
+                                streak: streak,
+                                canUnlock: canUnlock,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
