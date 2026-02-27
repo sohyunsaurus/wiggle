@@ -38,9 +38,15 @@ class _AnimatedCharacterState extends State<AnimatedCharacter>
   @override
   void initState() {
     super.initState();
+    // containerSize가 0이 아닌지 확인
+    final width =
+        widget.containerSize.width > 0 ? widget.containerSize.width : 300;
+    final height =
+        widget.containerSize.height > 0 ? widget.containerSize.height : 300;
+
     currentPosition = Offset(
-      widget.containerSize.width / 2,
-      widget.containerSize.height / 2,
+      width / 2 - characterSize / 2,
+      height / 2 - characterSize / 2,
     );
     currentDirection = CharacterDirection.south;
     positionController = AnimationController(
@@ -112,9 +118,14 @@ class _AnimatedCharacterState extends State<AnimatedCharacter>
     }
 
     // 경계 체크
+    final maxWidth =
+        widget.containerSize.width > 0 ? widget.containerSize.width : 300;
+    final maxHeight =
+        widget.containerSize.height > 0 ? widget.containerSize.height : 300;
+
     newPosition = Offset(
-      newPosition.dx.clamp(0, widget.containerSize.width - characterSize),
-      newPosition.dy.clamp(0, widget.containerSize.height - characterSize),
+      newPosition.dx.clamp(0, maxWidth - characterSize),
+      newPosition.dy.clamp(0, maxHeight - characterSize),
     );
 
     currentPosition = newPosition;
@@ -131,13 +142,34 @@ class _AnimatedCharacterState extends State<AnimatedCharacter>
       case CharacterDirection.northEast:
         return 'assets/characters/jump_northeast.gif';
       case CharacterDirection.north:
-        return 'assets/characters/jump_north.gif';
+        return 'assets/characters/jump_south.gif'; // Fallback to south
       case CharacterDirection.northWest:
         return 'assets/characters/jump_northwest.gif';
       case CharacterDirection.west:
         return 'assets/characters/jump_west.gif';
       case CharacterDirection.southWest:
         return 'assets/characters/jump_southwest.gif';
+    }
+  }
+
+  String _getDirectionEmoji() {
+    switch (currentDirection) {
+      case CharacterDirection.south:
+        return '⬇️';
+      case CharacterDirection.southEast:
+        return '↘️';
+      case CharacterDirection.east:
+        return '➡️';
+      case CharacterDirection.northEast:
+        return '↗️';
+      case CharacterDirection.north:
+        return '⬆️';
+      case CharacterDirection.northWest:
+        return '↖️';
+      case CharacterDirection.west:
+        return '⬅️';
+      case CharacterDirection.southWest:
+        return '↙️';
     }
   }
 
@@ -150,17 +182,45 @@ class _AnimatedCharacterState extends State<AnimatedCharacter>
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      left: currentPosition.dx,
-      top: currentPosition.dy,
-      child: SizedBox(
-        width: characterSize,
-        height: characterSize,
-        child: Image.asset(
-          _getCharacterAsset(),
-          fit: BoxFit.contain,
+    return Stack(
+      children: [
+        Positioned(
+          left: currentPosition.dx,
+          top: currentPosition.dy,
+          child: SizedBox(
+            width: characterSize,
+            height: characterSize,
+            child: _buildCharacterWidget(),
+          ),
         ),
-      ),
+      ],
+    );
+  }
+
+  Widget _buildCharacterWidget() {
+    final assetPath = _getCharacterAsset();
+    return Image.asset(
+      assetPath,
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) {
+        // Fallback to emoji if image fails to load
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.purple.withValues(alpha: 0.7),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: Colors.purpleAccent,
+              width: 2,
+            ),
+          ),
+          child: Center(
+            child: Text(
+              _getDirectionEmoji(),
+              style: const TextStyle(fontSize: 32),
+            ),
+          ),
+        );
+      },
     );
   }
 }

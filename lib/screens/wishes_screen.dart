@@ -9,13 +9,35 @@ import '../blocs/wishes/wishes_state.dart';
 import '../models/wish.dart';
 import '../widgets/character_unlock_dialog.dart';
 import '../widgets/wish_card.dart';
-import '../widgets/progress_indicator_widget.dart';
 import '../widgets/animated_character.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/lavender_theme.dart';
 
-class WishesScreen extends StatelessWidget {
+class WishesScreen extends StatefulWidget {
   const WishesScreen({super.key});
+
+  @override
+  State<WishesScreen> createState() => _WishesScreenState();
+}
+
+class _WishesScreenState extends State<WishesScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _backgroundScrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _backgroundScrollController = AnimationController(
+      duration: const Duration(seconds: 4),
+      vsync: this,
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _backgroundScrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,23 +91,11 @@ class WishesScreen extends StatelessWidget {
             final wishes = state is WishesLoaded
                 ? state.wishes
                 : (state as WishFulfilled).wishes;
-            final fulfilledCount = state is WishesLoaded
-                ? state.fulfilledCount
-                : (state as WishFulfilled).fulfilledCount;
-            final totalCount = state is WishesLoaded
-                ? state.totalCount
-                : (state as WishFulfilled).totalCount;
-            final streak = state is WishesLoaded
-                ? state.currentStreak
-                : (state as WishFulfilled).currentStreak;
-            final canUnlock = state is WishesLoaded
-                ? state.canUnlockCharacter
-                : (state as WishFulfilled).allWishesFulfilled;
 
             return SingleChildScrollView(
               child: Column(
                 children: [
-                  // Character background with progress
+                  // Character background
                   Container(
                     height: MediaQuery.of(context).size.height * 0.4,
                     decoration: BoxDecoration(
@@ -94,35 +104,31 @@ class WishesScreen extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    child: Stack(
-                      children: [
-                        // Character animation
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            return AnimatedCharacter(
-                              containerSize: Size(
-                                constraints.maxWidth,
-                                constraints.maxHeight,
+                    child: AnimatedBuilder(
+                      animation: _backgroundScrollController,
+                      builder: (context, child) {
+                        final offset = _backgroundScrollController.value * 20;
+                        final containerHeight =
+                            MediaQuery.of(context).size.height * 0.4;
+                        return Transform.translate(
+                          offset: Offset(0, offset),
+                          child: Stack(
+                            children: [
+                              // Character animation
+                              SizedBox(
+                                width: double.infinity,
+                                height: containerHeight,
+                                child: AnimatedCharacter(
+                                  containerSize: Size(
+                                    MediaQuery.of(context).size.width,
+                                    containerHeight,
+                                  ),
+                                ),
                               ),
-                            );
-                          },
-                        ),
-                        // Progress indicator at bottom
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.all(16),
-                              child: ProgressIndicatorWidget(
-                                completed: fulfilledCount,
-                                total: totalCount,
-                                streak: streak,
-                                canUnlock: canUnlock,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ),
 
@@ -133,9 +139,9 @@ class WishesScreen extends StatelessWidget {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           padding: const EdgeInsets.symmetric(horizontal: 16),
-                          itemCount: wishes.length,
+                          itemCount: wishes.length - 1,
                           itemBuilder: (context, index) {
-                            final wish = wishes[index];
+                            final wish = wishes[index + 1];
                             return WishCard(
                               wish: wish,
                               onToggle: (fulfilled) {
