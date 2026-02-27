@@ -36,8 +36,8 @@ class _AnimatedCharacterState extends State<AnimatedCharacter>
   final double speed = 1.0;
   final Duration movementDuration = const Duration(seconds: 3);
   late DateTime lastDirectionChangeTime;
-  final double leftPadding = 20;
-  final double bottomPadding = 20;
+  final double leftPadding = 30;
+  final double bottomPadding = 30;
 
   @override
   void initState() {

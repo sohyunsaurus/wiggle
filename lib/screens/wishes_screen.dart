@@ -44,124 +44,127 @@ class _WishesScreenState extends State<WishesScreen>
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: BlocConsumer<WishesBloc, WishesState>(
-        listener: (context, state) {
-          if (state is WishFulfilled && state.unlockedCharacter != null) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (_) =>
-                  CharacterUnlockDialog(character: state.unlockedCharacter!),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is WishesLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: SafeArea(
+        child: BlocConsumer<WishesBloc, WishesState>(
+          listener: (context, state) {
+            if (state is WishFulfilled && state.unlockedCharacter != null) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) =>
+                    CharacterUnlockDialog(character: state.unlockedCharacter!),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is WishesLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          if (state is WishesError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline,
-                      size: 64, color: Color(0xFFEF4444)),
-                  const SizedBox(height: 16),
-                  Text('${l10n.errorOccurred}: ${state.message}'),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () =>
-                        context.read<WishesBloc>().add(LoadTodayWishes()),
-                    child: Text(l10n.tryAgain),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          if (state is WishesLoaded || state is WishFulfilled) {
-            final wishes = state is WishesLoaded
-                ? state.wishes
-                : (state as WishFulfilled).wishes;
-
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  // Character background
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/backgrounds/purple_bg.jpeg'),
-                        fit: BoxFit.cover,
-                      ),
+            if (state is WishesError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline,
+                        size: 64, color: Color(0xFFEF4444)),
+                    const SizedBox(height: 16),
+                    Text('${l10n.errorOccurred}: ${state.message}'),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () =>
+                          context.read<WishesBloc>().add(LoadTodayWishes()),
+                      child: Text(l10n.tryAgain),
                     ),
-                    child: AnimatedBuilder(
-                      animation: _backgroundScrollController,
-                      builder: (context, child) {
-                        final offset = _backgroundScrollController.value * 20;
-                        final containerHeight =
-                            MediaQuery.of(context).size.height * 0.4;
-                        return Transform.translate(
-                          offset: Offset(0, offset),
-                          child: Stack(
-                            children: [
-                              // Character animation
-                              SizedBox(
-                                width: double.infinity,
-                                height: containerHeight,
-                                child: AnimatedCharacter(
-                                  containerSize: Size(
-                                    MediaQuery.of(context).size.width,
-                                    containerHeight,
+                  ],
+                ),
+              );
+            }
+
+            if (state is WishesLoaded || state is WishFulfilled) {
+              final wishes = state is WishesLoaded
+                  ? state.wishes
+                  : (state as WishFulfilled).wishes;
+
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    // Character background
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.4,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image:
+                              AssetImage('assets/backgrounds/purple_bg.jpeg'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: AnimatedBuilder(
+                        animation: _backgroundScrollController,
+                        builder: (context, child) {
+                          final offset = _backgroundScrollController.value * 20;
+                          final containerHeight =
+                              MediaQuery.of(context).size.height * 0.4;
+                          return Transform.translate(
+                            offset: Offset(0, offset),
+                            child: Stack(
+                              children: [
+                                // Character animation
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: containerHeight,
+                                  child: AnimatedCharacter(
+                                    containerSize: Size(
+                                      MediaQuery.of(context).size.width,
+                                      containerHeight,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ),
 
-                  // Wishes list
-                  wishes.isEmpty
-                      ? _buildEmptyState(context, l10n)
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          itemCount: wishes.length - 1,
-                          itemBuilder: (context, index) {
-                            final wish = wishes[index + 1];
-                            return WishCard(
-                              wish: wish,
-                              onToggle: (fulfilled) {
-                                if (fulfilled) {
-                                  context
-                                      .read<WishesBloc>()
-                                      .add(FulfillWish(wishId: wish.id!));
-                                } else {
-                                  context
-                                      .read<WishesBloc>()
-                                      .add(UnfulfillWish(wishId: wish.id!));
-                                }
-                              },
-                              onDelete: () =>
-                                  _showDeleteDialog(context, wish, l10n),
-                              onEdit: () =>
-                                  _showEditWishDialog(context, wish, l10n),
-                            );
-                          },
-                        ),
-                ],
-              ),
-            );
-          }
+                    // Wishes list
+                    wishes.isEmpty
+                        ? _buildEmptyState(context, l10n)
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: wishes.length - 1,
+                            itemBuilder: (context, index) {
+                              final wish = wishes[index + 1];
+                              return WishCard(
+                                wish: wish,
+                                onToggle: (fulfilled) {
+                                  if (fulfilled) {
+                                    context
+                                        .read<WishesBloc>()
+                                        .add(FulfillWish(wishId: wish.id!));
+                                  } else {
+                                    context
+                                        .read<WishesBloc>()
+                                        .add(UnfulfillWish(wishId: wish.id!));
+                                  }
+                                },
+                                onDelete: () =>
+                                    _showDeleteDialog(context, wish, l10n),
+                                onEdit: () =>
+                                    _showEditWishDialog(context, wish, l10n),
+                              );
+                            },
+                          ),
+                  ],
+                ),
+              );
+            }
 
-          return const SizedBox.shrink();
-        },
+            return const SizedBox.shrink();
+          },
+        ),
       ),
       floatingActionButton: GlassmorphicContainer(
         padding: const EdgeInsets.all(16),
