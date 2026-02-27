@@ -33,7 +33,9 @@ class _AnimatedCharacterState extends State<AnimatedCharacter>
   late AnimationController positionController;
   final Random random = Random();
   final double characterSize = 80;
-  final double speed = 2.0;
+  final double speed = 1.0;
+  final Duration movementDuration = const Duration(seconds: 3);
+  late DateTime lastDirectionChangeTime;
 
   @override
   void initState() {
@@ -49,6 +51,7 @@ class _AnimatedCharacterState extends State<AnimatedCharacter>
       height / 2 - characterSize / 2,
     );
     currentDirection = CharacterDirection.south;
+    lastDirectionChangeTime = DateTime.now();
     positionController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -57,25 +60,40 @@ class _AnimatedCharacterState extends State<AnimatedCharacter>
   }
 
   void _startMovement() {
-    movementTimer = Timer.periodic(const Duration(milliseconds: 500), (_) {
+    movementTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
       if (mounted) {
         setState(() {
-          _moveCharacter();
+          _updateCharacterPosition();
         });
       }
     });
   }
 
-  void _moveCharacter() {
-    // 랜덤하게 방향 선택 (가끔 멈추기)
+  void _updateCharacterPosition() {
+    final now = DateTime.now();
+    final timeSinceDirectionChange = now.difference(lastDirectionChangeTime);
+
+    // 3초마다 새로운 방향 선택
+    if (timeSinceDirectionChange >= movementDuration) {
+      _changeDirection();
+      lastDirectionChangeTime = now;
+    }
+
+    // 현재 방향으로 계속 이동
+    _moveCharacterInCurrentDirection();
+  }
+
+  void _changeDirection() {
+    // 30% 확률로 멈추기 (방향 유지)
     if (random.nextDouble() < 0.3) {
-      // 30% 확률로 멈추기
       return;
     }
 
     final directions = CharacterDirection.values;
     currentDirection = directions[random.nextInt(directions.length)];
+  }
 
+  void _moveCharacterInCurrentDirection() {
     Offset newPosition = currentPosition;
 
     switch (currentDirection) {
