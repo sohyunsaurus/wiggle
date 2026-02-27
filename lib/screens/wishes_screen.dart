@@ -169,18 +169,30 @@ class _WishesScreenState extends State<WishesScreen>
       floatingActionButton: GlassmorphicContainer(
         padding: const EdgeInsets.all(16),
         borderRadius: BorderRadius.circular(20),
-        child: FloatingActionButton.extended(
+        child: FloatingActionButton(
           onPressed: () => _showAddWishDialog(context, l10n),
           backgroundColor: Colors.transparent,
           elevation: 0,
-          icon: Image.asset(
-            'assets/tea.png',
-            width: 24,
-            height: 24,
-            fit: BoxFit.contain,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/tea.png',
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l10n.newWish,
+                style: const TextStyle(
+                  color: Color(0xFF7C3AED),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
-          label: Text(l10n.newWish,
-              style: const TextStyle(color: Color(0xFF7C3AED))),
         ),
       ),
     );
