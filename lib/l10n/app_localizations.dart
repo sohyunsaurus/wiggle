@@ -259,6 +259,25 @@ class AppLocalizations {
   String get goldenMessage => locale.languageCode == 'ko'
       ? '이 친구는 관련된 모든 소원이 이뤄져서 황금빛으로 빛나고 있어요! ✨'
       : 'This companion glows golden because all related wishes have been fulfilled! ✨';
+
+  // Progress Indicator
+  String get todayProgress =>
+      locale.languageCode == 'ko' ? '오늘의 진행률' : 'Today\'s Progress';
+  String get completed => locale.languageCode == 'ko' ? '완료' : 'completed';
+  String get daysStreak =>
+      locale.languageCode == 'ko' ? '일 연속' : ' days streak';
+  String get characterUnlockAvailable => locale.languageCode == 'ko'
+      ? '캐릭터 획득 가능!'
+      : 'Character unlock available!';
+  String get allTasksCompleted => locale.languageCode == 'ko'
+      ? '🎉 모든 할일을 완료했어요! 새로운 친구가 기다리고 있어요!'
+      : '🎉 All tasks completed! A new friend is waiting for you!';
+  String tasksRemaining(int count) => locale.languageCode == 'ko'
+      ? '좋아요! $count개만 더 완료하면 새 친구를 만날 수 있어요!'
+      : 'Great! Complete $count more to meet a new friend!';
+  String get startYourDay => locale.languageCode == 'ko'
+      ? '오늘도 화이팅! 하나씩 완료해서 귀여운 친구를 모아보세요 🌟'
+      : 'Let\'s go! Complete tasks one by one to collect cute friends 🌟';
 }
 
 class _AppLocalizationsDelegate

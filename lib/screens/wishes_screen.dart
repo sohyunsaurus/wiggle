@@ -81,24 +81,40 @@ class WishesScreen extends StatelessWidget {
                 ? state.canUnlockCharacter
                 : (state as WishFulfilled).allWishesFulfilled;
 
-            return Column(
-              children: [
-                // Progress header
-                Container(
-                  margin: const EdgeInsets.all(16),
-                  child: ProgressIndicatorWidget(
-                    completed: fulfilledCount,
-                    total: totalCount,
-                    streak: streak,
-                    canUnlock: canUnlock,
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Character background with progress
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/backgrounds/purple_bg.jpeg'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.all(16),
+                          child: ProgressIndicatorWidget(
+                            completed: fulfilledCount,
+                            total: totalCount,
+                            streak: streak,
+                            canUnlock: canUnlock,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
 
-                // Wishes list
-                Expanded(
-                  child: wishes.isEmpty
+                  // Wishes list
+                  wishes.isEmpty
                       ? _buildEmptyState(context, l10n)
                       : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           itemCount: wishes.length,
                           itemBuilder: (context, index) {
@@ -123,8 +139,8 @@ class WishesScreen extends StatelessWidget {
                             );
                           },
                         ),
-                ),
-              ],
+                ],
+              ),
             );
           }
 

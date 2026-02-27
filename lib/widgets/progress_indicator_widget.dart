@@ -1,5 +1,7 @@
 // widgets/progress_indicator_widget.dart
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
+import '../theme/lavender_theme.dart';
 
 class ProgressIndicatorWidget extends StatelessWidget {
   final int completed;
@@ -17,6 +19,7 @@ class ProgressIndicatorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final progress = total > 0 ? completed / total : 0.0;
 
     return Container(
@@ -32,7 +35,7 @@ class ProgressIndicatorWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -47,17 +50,22 @@ class ProgressIndicatorWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '오늘의 진행률',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                    l10n.todayProgress,
+                    style: getLocalizedTextStyle(
+                      context,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '$completed / $total 완료',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.grey[600],
-                        ),
+                    '$completed / $total ${l10n.completed}',
+                    style: getLocalizedTextStyle(
+                      context,
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
                   ),
                 ],
               ),
@@ -70,12 +78,13 @@ class ProgressIndicatorWidget extends StatelessWidget {
                           color: Colors.orange, size: 20),
                       const SizedBox(width: 4),
                       Text(
-                        '$streak일 연속',
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.orange[700],
-                                ),
+                        '$streak${l10n.daysStreak}',
+                        style: getLocalizedTextStyle(
+                          context,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange[700],
+                        ),
                       ),
                     ],
                   ),
@@ -88,12 +97,13 @@ class ProgressIndicatorWidget extends StatelessWidget {
                         color: Colors.purple,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Text(
-                        '캐릭터 획득 가능!',
-                        style: TextStyle(
-                          color: Colors.white,
+                      child: Text(
+                        l10n.characterUnlockAvailable,
+                        style: getLocalizedTextStyle(
+                          context,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -129,11 +139,12 @@ class ProgressIndicatorWidget extends StatelessWidget {
 
           // Motivational Text
           Text(
-            _getMotivationalText(),
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontStyle: FontStyle.italic,
-                  color: Colors.grey[600],
-                ),
+            _getMotivationalText(l10n),
+            style: getLocalizedTextStyle(
+              context,
+              fontSize: 14,
+              color: Colors.grey[600],
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -141,13 +152,13 @@ class ProgressIndicatorWidget extends StatelessWidget {
     );
   }
 
-  String _getMotivationalText() {
+  String _getMotivationalText(AppLocalizations l10n) {
     if (canUnlock) {
-      return '🎉 모든 할일을 완료했어요! 새로운 친구가 기다리고 있어요!';
+      return l10n.allTasksCompleted;
     } else if (completed > 0) {
-      return '좋아요! ${total - completed}개만 더 완료하면 새 친구를 만날 수 있어요!';
+      return l10n.tasksRemaining(total - completed);
     } else {
-      return '오늘도 화이팅! 하나씩 완료해서 귀여운 친구를 모아보세요 🌟';
+      return l10n.startYourDay;
     }
   }
 }

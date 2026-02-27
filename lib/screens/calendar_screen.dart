@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../data/database_helper.dart';
 import '../models/wish.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/lavender_theme.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -258,6 +259,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   child: ValueListenableBuilder<List<Wish>>(
                     valueListenable: _selectedWishes,
                     builder: (context, wishes, _) {
+                      final locale = Localizations.localeOf(context);
                       return Container(
                         margin: const EdgeInsets.symmetric(horizontal: 16),
                         child: Column(
@@ -266,14 +268,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           children: [
                             Text(
                               _selectedDay != null
-                                  ? '${DateFormat('M월 d일 (E)', 'ko_KR').format(_selectedDay!)} - ${wishes.length}개의 소원'
+                                  ? '${DateFormat.MMMd(locale.languageCode == 'ko' ? 'ko_KR' : 'en_US').format(_selectedDay!)} (${DateFormat.E(locale.languageCode == 'ko' ? 'ko_KR' : 'en_US').format(_selectedDay!)}) - ${wishes.length}${locale.languageCode == 'ko' ? '개의 소원' : ' wishes'}'
                                   : l10n.noWishesThisDay,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: getLocalizedTextStyle(
+                                context,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                             ),
                             const SizedBox(height: 12),
                             Expanded(
@@ -291,9 +293,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                           const SizedBox(height: 8),
                                           Text(
                                             l10n.noWishesThisDay,
-                                            style: TextStyle(
-                                              color: Colors.grey[600],
+                                            style: getLocalizedTextStyle(
+                                              context,
                                               fontSize: 16,
+                                              color: Colors.grey[600],
                                             ),
                                           ),
                                         ],
@@ -319,6 +322,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget _buildMonthlyStats(AppLocalizations l10n) {
+    final locale = Localizations.localeOf(context);
     final currentMonth = DateTime(_focusedDay.year, _focusedDay.month);
     final monthWishes = _wishEvents.entries
         .where((entry) =>
@@ -337,19 +341,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
       children: [
         _buildStatItem(
           l10n.totalWishes,
-          '$totalWishes개',
+          '$totalWishes${locale.languageCode == 'ko' ? '개' : ''}',
           Icons.auto_awesome,
           Theme.of(context).colorScheme.primary,
         ),
         _buildStatItem(
           l10n.fulfilledWishes,
-          '$fulfilledWishes개',
+          '$fulfilledWishes${locale.languageCode == 'ko' ? '개' : ''}',
           Icons.star,
           Colors.amber,
         ),
         _buildStatItem(
           l10n.activeDays,
-          '$activeDays일',
+          '$activeDays${locale.languageCode == 'ko' ? '일' : ''}',
           Icons.calendar_today,
           Colors.green,
         ),
@@ -365,7 +369,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
         const SizedBox(height: 4),
         Text(
           value,
-          style: TextStyle(
+          style: getLocalizedTextStyle(
+            context,
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: color,
@@ -373,7 +378,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
         Text(
           label,
-          style: TextStyle(
+          style: getLocalizedTextStyle(
+            context,
             fontSize: 12,
             color: Colors.grey[600],
           ),
@@ -410,21 +416,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
               children: [
                 Text(
                   wish.what,
-                  style: TextStyle(
+                  style: getLocalizedTextStyle(
+                    context,
+                    fontSize: 14,
                     fontWeight: FontWeight.w600,
+                    color: wish.fulfilled ? Colors.grey[600] : null,
+                  ).copyWith(
                     decoration:
                         wish.fulfilled ? TextDecoration.lineThrough : null,
-                    color: wish.fulfilled ? Colors.grey[600] : null,
                   ),
                 ),
                 if (wish.why.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
                     wish.why,
-                    style: TextStyle(
+                    style: getLocalizedTextStyle(
+                      context,
                       fontSize: 12,
                       color: Colors.grey[600],
-                      fontStyle: FontStyle.italic,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -441,10 +450,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ),
             child: Text(
               wish.category,
-              style: TextStyle(
+              style: getLocalizedTextStyle(
+                context,
                 fontSize: 10,
-                color: _getCategoryColor(wish.category),
                 fontWeight: FontWeight.bold,
+                color: _getCategoryColor(wish.category),
               ),
             ),
           ),
