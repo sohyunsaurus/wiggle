@@ -27,8 +27,8 @@ class WishCard extends StatelessWidget {
           gradient: wish.fulfilled
               ? LinearGradient(
                   colors: [
-                    Colors.amber.withOpacity(0.3),
-                    Colors.orange.withOpacity(0.2),
+                    const Color(0xFFB4A7FF).withOpacity(0.3),
+                    const Color(0xFFE8DFFF).withOpacity(0.2),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -51,12 +51,13 @@ class WishCard extends StatelessWidget {
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: wish.fulfilled
-                              ? Colors.amber
+                              ? const Color(0xFFB4A7FF)
                               : Theme.of(context).colorScheme.primary,
                           width: 2,
                         ),
-                        color:
-                            wish.fulfilled ? Colors.amber : Colors.transparent,
+                        color: wish.fulfilled
+                            ? const Color(0xFFB4A7FF)
+                            : Colors.transparent,
                       ),
                       child: wish.fulfilled
                           ? const Icon(
@@ -143,19 +144,19 @@ class WishCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.amber.withOpacity(0.2),
+                        color: const Color(0xFFB4A7FF).withOpacity(0.2),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.amber),
+                        border: Border.all(color: const Color(0xFFB4A7FF)),
                       ),
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.star, color: Colors.amber, size: 16),
+                          Icon(Icons.star, color: Color(0xFFB4A7FF), size: 16),
                           SizedBox(width: 4),
                           Text(
                             'Fulfilled ✨',
                             style: TextStyle(
-                              color: Colors.amber,
+                              color: Color(0xFFB4A7FF),
                               fontWeight: FontWeight.w600,
                               fontSize: 12,
                             ),

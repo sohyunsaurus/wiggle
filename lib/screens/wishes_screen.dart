@@ -128,6 +128,7 @@ class _WishesScreenState extends State<WishesScreen>
                     ),
 
                     // Wishes list
+                    const SizedBox(height: 16),
                     wishes.isEmpty
                         ? _buildEmptyState(context, l10n)
                         : ListView.builder(
