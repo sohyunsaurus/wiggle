@@ -91,7 +91,7 @@ class _WishesScreenState extends State<WishesScreen>
                   children: [
                     // Character background
                     Container(
-                      height: MediaQuery.of(context).size.height * 0.3,
+                      height: MediaQuery.of(context).size.height * 0.5,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image:
@@ -104,7 +104,7 @@ class _WishesScreenState extends State<WishesScreen>
                         builder: (context, child) {
                           final offset = _backgroundScrollController.value * 20;
                           final containerHeight =
-                              MediaQuery.of(context).size.height * 0.3;
+                              MediaQuery.of(context).size.height * 0.5;
                           return Transform.translate(
                             offset: Offset(0, offset),
                             child: Stack(
