@@ -44,6 +44,28 @@ class _WishesScreenState extends State<WishesScreen>
 
     return Scaffold(
       backgroundColor: Colors.transparent,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(56),
+        child: GlassmorphicContainer(
+          blur: 15,
+          opacity: 1,
+          color: const Color(0xFF8B9DC3),
+          borderRadius: BorderRadius.zero,
+          child: AppBar(
+            title: Text(
+              l10n.makeWish,
+              style: getLocalizedTextStyle(
+                context,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: BlocConsumer<WishesBloc, WishesState>(
           listener: (context, state) {
@@ -91,12 +113,17 @@ class _WishesScreenState extends State<WishesScreen>
                   children: [
                     // Character background
                     Container(
-                      height: MediaQuery.of(context).size.height * 0.5,
+                      margin: const EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image:
                               AssetImage('assets/backgrounds/purple_bg.jpeg'),
-                          fit: BoxFit.cover,
+                          fit: BoxFit.contain,
+                        ),
+                        borderRadius: BorderRadius.circular(3),
+                        border: Border.all(
+                          color: const Color(0xFFFFFBE6),
+                          width: 3,
                         ),
                       ),
                       child: AnimatedBuilder(
@@ -104,7 +131,7 @@ class _WishesScreenState extends State<WishesScreen>
                         builder: (context, child) {
                           final offset = _backgroundScrollController.value * 20;
                           final containerHeight =
-                              MediaQuery.of(context).size.height * 0.5;
+                              MediaQuery.of(context).size.height * 0.41;
                           return Transform.translate(
                             offset: Offset(0, offset),
                             child: Stack(
@@ -113,10 +140,14 @@ class _WishesScreenState extends State<WishesScreen>
                                 SizedBox(
                                   width: double.infinity,
                                   height: containerHeight,
-                                  child: AnimatedCharacter(
-                                    containerSize: Size(
-                                      MediaQuery.of(context).size.width,
-                                      containerHeight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16),
+                                    child: AnimatedCharacter(
+                                      containerSize: Size(
+                                        MediaQuery.of(context).size.width - 32,
+                                        containerHeight,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -167,33 +198,32 @@ class _WishesScreenState extends State<WishesScreen>
           },
         ),
       ),
-      floatingActionButton: GlassmorphicContainer(
-        padding: const EdgeInsets.all(16),
-        borderRadius: BorderRadius.circular(20),
-        child: FloatingActionButton(
-          onPressed: () => _showAddWishDialog(context, l10n),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/tea.png',
-                width: 24,
-                height: 24,
-                fit: BoxFit.contain,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                l10n.newWish,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showAddWishDialog(context, l10n),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Image.asset(
+              'assets/tea.png',
+              width: 56,
+              height: 56,
+              fit: BoxFit.contain,
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Text(
+                'NEW',
                 style: const TextStyle(
-                  color: Color(0xFF7C3AED),
+                  color: Color(0xFFB4A7FF),
                   fontSize: 10,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -257,8 +287,15 @@ class _WishesScreenState extends State<WishesScreen>
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title:
-              Text(existingWish == null ? l10n.makeWishTitle : l10n.editWish),
+          title: Text(
+            existingWish == null ? l10n.makeWishTitle : l10n.editWish,
+            style: getLocalizedTextStyle(
+              context,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF5D1049),
+            ),
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/database_helper.dart';
 import '../models/character.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/lavender_theme.dart';
 
 class CharacterCollectionScreen extends StatefulWidget {
   const CharacterCollectionScreen({super.key});
@@ -46,9 +47,27 @@ class _CharacterCollectionScreenState extends State<CharacterCollectionScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.myCollection),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(56),
+        child: GlassmorphicContainer(
+          blur: 15,
+          opacity: 0.5,
+          color: const Color(0xFFB4A7FF),
+          borderRadius: BorderRadius.zero,
+          child: AppBar(
+            title: Text(
+              l10n.myCollection,
+              style: getLocalizedTextStyle(
+                context,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+          ),
+        ),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -97,10 +116,10 @@ class _CharacterCollectionScreenState extends State<CharacterCollectionScreen> {
     return GridView.builder(
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.8,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
+        crossAxisCount: 5,
+        childAspectRatio: 0.9,
+        crossAxisSpacing: 3,
+        mainAxisSpacing: 3,
       ),
       itemCount: characters.length,
       itemBuilder: (context, index) {
@@ -113,132 +132,37 @@ class _CharacterCollectionScreenState extends State<CharacterCollectionScreen> {
   Widget _buildCharacterCard(Character character, AppLocalizations l10n) {
     return GestureDetector(
       onTap: () => _showCharacterDetails(character, l10n),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: character.isGolden
-              ? LinearGradient(
-                  colors: [
-                    Colors.amber.withValues(alpha: 0.3),
-                    Colors.orange.withValues(alpha: 0.2),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : null,
-          border: character.isGolden
-              ? Border.all(color: Colors.amber, width: 2)
-              : null,
-          boxShadow: character.isGolden
-              ? [
-                  BoxShadow(
-                    color: Colors.amber.withValues(alpha: 0.4),
-                    blurRadius: 12,
-                    spreadRadius: 2,
-                  ),
-                ]
-              : null,
-        ),
-        child: Card(
-          elevation: character.isGolden ? 8 : 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // Character avatar placeholder
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: _getRarityColor(character.rarity)
-                          .withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: _getRarityColor(character.rarity)
-                            .withValues(alpha: 0.3),
-                      ),
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            character.assetPath,
-                            style: const TextStyle(fontSize: 48),
-                          ),
-                          if (character.isGolden) ...[
-                            const SizedBox(height: 8),
-                            const Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                              size: 24,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
+      child: Column(
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: character.isGolden
+                    ? Border.all(color: Colors.amber, width: 2)
+                    : null,
+              ),
+              child: Center(
+                child: Text(
+                  character.assetPath,
+                  style: const TextStyle(fontSize: 40),
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  character.characterName,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: character.isGolden ? Colors.amber[800] : null,
-                      ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  character.date,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildStatIndicator(
-                      Icons.favorite,
-                      character.happiness,
-                      Colors.red,
-                    ),
-                    const SizedBox(width: 8),
-                    _buildStatIndicator(
-                      Icons.flash_on,
-                      character.energy,
-                      Colors.blue,
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatIndicator(IconData icon, int value, Color color) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 16, color: color),
-        const SizedBox(width: 2),
-        Text(
-          '$value',
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: color,
+          const SizedBox(height: 8),
+          Text(
+            character.characterName,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: character.isGolden ? Colors.amber[800] : null,
+                ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -259,13 +183,16 @@ class _CharacterCollectionScreenState extends State<CharacterCollectionScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Expanded(
-              child: Text(character.characterName),
-            ),
-            if (character.isGolden) const Icon(Icons.star, color: Colors.amber),
-          ],
+        title: Text(
+          character.characterName,
+          style: getLocalizedTextStyle(
+            context,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: character.isGolden
+                ? Colors.amber[800]
+                : const Color(0xFF5D1049),
+          ),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,

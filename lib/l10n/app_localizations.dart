@@ -77,7 +77,7 @@ class AppLocalizations {
 
   // Calendar Screen
   String get wishCalendar =>
-      locale.languageCode == 'ko' ? '소원 달력 📅' : 'Wish Calendar 📅';
+      locale.languageCode == 'ko' ? '소원 달력' : 'Wish Calendar';
   String get totalWishes =>
       locale.languageCode == 'ko' ? '총 소원' : 'Total Wishes';
   String get fulfilledWishes =>
@@ -106,7 +106,7 @@ class AppLocalizations {
       locale.languageCode == 'ko' ? '황금 친구들' : 'golden companions';
 
   // Settings Screen
-  String get settings => locale.languageCode == 'ko' ? '설정 ⚙️' : 'Settings ⚙️';
+  String get settings => locale.languageCode == 'ko' ? '설정' : 'Settings';
   String get appInfo => locale.languageCode == 'ko' ? '앱 정보' : 'App Info';
   String get dataManagement =>
       locale.languageCode == 'ko' ? '데이터 관리' : 'Data Management';

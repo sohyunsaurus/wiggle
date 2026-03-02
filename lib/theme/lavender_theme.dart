@@ -26,19 +26,20 @@ final ThemeData glassmorphismLavenderTheme = ThemeData(
 
   // 앱바 테마
   appBarTheme: AppBarTheme(
-    backgroundColor: Colors.transparent,
+    backgroundColor: const Color(0xFF78B7AE),
     elevation: 0,
     scrolledUnderElevation: 0,
     centerTitle: true,
     titleTextStyle: const TextStyle(
-      color: Color(0xFF5D1049), // 진한 핑크
+      color: Colors.white,
       fontSize: 20,
       fontWeight: FontWeight.w600,
       letterSpacing: 0.5,
     ),
     iconTheme: const IconThemeData(
-      color: Color(0xFFFF8FB4), // 파스텔 핑크
+      color: Colors.white,
     ),
+    surfaceTintColor: Colors.transparent,
   ),
 
   // 카드 테마 (Glassmorphism)

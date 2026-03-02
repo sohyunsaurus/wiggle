@@ -50,8 +50,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.transparent,
           elevation: 0,
-          selectedItemColor: const Color(0xFF7C3AED),
-          unselectedItemColor: const Color(0xFF9CA3AF),
+          selectedItemColor: const Color(0xFFB4A7FF), // 라벤더
+          unselectedItemColor: const Color(0xFFB4A7FF), // 라벤더
+
           selectedLabelStyle: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 12,
@@ -62,72 +63,56 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
           items: [
             BottomNavigationBarItem(
-              icon: Image.asset(
-                'assets/wish.png',
-                width: 24,
-                height: 24,
-                fit: BoxFit.contain,
-              ),
-              activeIcon: Image.asset(
-                'assets/wish.png',
-                width: 24,
-                height: 24,
-                fit: BoxFit.contain,
-                color: const Color(0xFF7C3AED),
-              ),
+              icon: _buildNavIcon('assets/wish.png', 0),
+              activeIcon: _buildActiveNavIcon('assets/wish.png', 0),
               label: l10n.navWishes,
             ),
             BottomNavigationBarItem(
-              icon: Image.asset(
-                'assets/calendar.png',
-                width: 24,
-                height: 24,
-                fit: BoxFit.contain,
-              ),
-              activeIcon: Image.asset(
-                'assets/calendar.png',
-                width: 24,
-                height: 24,
-                fit: BoxFit.contain,
-                color: const Color(0xFF7C3AED),
-              ),
+              icon: _buildNavIcon('assets/calendar.png', 1),
+              activeIcon: _buildActiveNavIcon('assets/calendar.png', 1),
               label: l10n.navCalendar,
             ),
             BottomNavigationBarItem(
-              icon: Image.asset(
-                'assets/collection.png',
-                width: 24,
-                height: 24,
-                fit: BoxFit.contain,
-              ),
-              activeIcon: Image.asset(
-                'assets/collection.png',
-                width: 24,
-                height: 24,
-                fit: BoxFit.contain,
-                color: const Color(0xFF7C3AED),
-              ),
+              icon: _buildNavIcon('assets/collection.png', 2),
+              activeIcon: _buildActiveNavIcon('assets/collection.png', 2),
               label: l10n.navCollection,
             ),
             BottomNavigationBarItem(
-              icon: Image.asset(
-                'assets/setting.png',
-                width: 24,
-                height: 24,
-                fit: BoxFit.contain,
-              ),
-              activeIcon: Image.asset(
-                'assets/setting.png',
-                width: 24,
-                height: 24,
-                fit: BoxFit.contain,
-                color: const Color(0xFF7C3AED),
-              ),
+              icon: _buildNavIcon('assets/setting.png', 3),
+              activeIcon: _buildActiveNavIcon('assets/setting.png', 3),
               label: l10n.navSettings,
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildNavIcon(String assetPath, int index) {
+    return Image.asset(
+      assetPath,
+      width: 24,
+      height: 24,
+      fit: BoxFit.contain,
+      color: const Color(0xFFB4A7FF),
+    );
+  }
+
+  Widget _buildActiveNavIcon(String assetPath, int index) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 1.0, end: 1.2),
+      duration: const Duration(milliseconds: 300),
+      builder: (context, scale, child) {
+        return Transform.scale(
+          scale: scale,
+          child: Image.asset(
+            assetPath,
+            width: 24,
+            height: 24,
+            fit: BoxFit.contain,
+          ),
+        );
+      },
     );
   }
 }

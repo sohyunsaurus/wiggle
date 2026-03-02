@@ -23,10 +23,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: Text(l10n.settings),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(56),
+        child: GlassmorphicContainer(
+          blur: 15,
+          opacity: 0.5,
+          color: const Color(0xFF8B9DC3),
+          borderRadius: BorderRadius.zero,
+          child: AppBar(
+            title: Text(
+              l10n.settings,
+              style: getLocalizedTextStyle(
+                context,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+          ),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -89,7 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             Icon(
               FluentSystemIcons.ic_fluent_star_filled,
-              color: const Color(0xFF9C88FF),
+              color: const Color(0xFFB4A7FF), // 파스텔 퍼플
               size: 24,
             ),
             const SizedBox(width: 12),
@@ -154,7 +171,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
         return Card(
           child: ListTile(
-            leading: const Icon(Icons.language, color: Colors.blue),
+            leading:
+                const Icon(Icons.language, color: Color(0xFFA7D8FF)), // 파스텔 블루
             title: Text(l10n.language),
             subtitle:
                 Text(currentLanguage == 'ko' ? l10n.korean : l10n.english),
@@ -170,7 +188,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.selectLanguage),
+        title: Text(
+          l10n.selectLanguage,
+          style: getLocalizedTextStyle(
+            context,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -217,7 +243,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Column(
         children: [
           ListTile(
-            leading: const Icon(Icons.backup, color: Colors.blue),
+            leading:
+                const Icon(Icons.backup, color: Color(0xFFFFB4D6)), // 파스텔 핑크
             title: Text(l10n.dataBackup),
             subtitle: Text(l10n.backupDescription),
             trailing: const Icon(Icons.chevron_right),
@@ -225,9 +252,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _showComingSoonDialog(l10n.dataBackup, l10n);
             },
           ),
-          const Divider(height: 1),
+          const Divider(
+            height: 0.5,
+            color: Colors.white,
+          ),
           ListTile(
-            leading: const Icon(Icons.restore, color: Colors.green),
+            leading:
+                const Icon(Icons.restore, color: Color(0xFFA7D8FF)), // 파스텔 블루
             title: Text(l10n.dataRestore),
             subtitle: Text(l10n.restoreDescription),
             trailing: const Icon(Icons.chevron_right),
@@ -235,9 +266,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _showComingSoonDialog(l10n.dataRestore, l10n);
             },
           ),
-          const Divider(height: 1),
+          const Divider(
+            height: 0.5,
+            color: Colors.white,
+          ),
           ListTile(
-            leading: const Icon(Icons.analytics, color: Colors.orange),
+            leading:
+                const Icon(Icons.analytics, color: Color(0xFFB4A7FF)), // 파스텔 퍼플
             title: Text(l10n.viewStats),
             subtitle: Text(l10n.statsDescription),
             trailing: const Icon(Icons.chevron_right),
@@ -266,7 +301,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             trailing: const Icon(Icons.chevron_right, color: Colors.red),
             onTap: () => _showDeleteWishesDialog(l10n),
           ),
-          const Divider(height: 1),
+          const Divider(
+            height: 0.5,
+            color: Colors.white,
+          ),
           ListTile(
             leading: const Icon(Icons.pets_outlined, color: Colors.red),
             title: Text(
@@ -278,7 +316,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             trailing: const Icon(Icons.chevron_right, color: Colors.red),
             onTap: () => _showDeleteCharactersDialog(l10n),
           ),
-          const Divider(height: 1),
+          const Divider(
+            height: 0.5,
+            color: Colors.white,
+          ),
           ListTile(
             leading: const Icon(Icons.delete_sweep, color: Colors.red),
             title: Text(
@@ -299,7 +340,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('$feature ${l10n.comingSoon}'),
+        title: Text(
+          '$feature ${l10n.comingSoon}',
+          style: getLocalizedTextStyle(
+            context,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
         content: Text(l10n.featureComingSoon),
         actions: [
           TextButton(
@@ -339,7 +388,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text(l10n.myStatistics),
+            title: Text(
+              l10n.myStatistics,
+              style: getLocalizedTextStyle(
+                context,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -350,7 +407,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     '${wishStats['fulfilled_wishes']}개'),
                 _buildStatRow(
                     l10n.activeDaysCount, '${wishStats['active_days']}일'),
-                const Divider(),
+                const Divider(height: 0.5, color: Colors.white),
                 _buildStatRow(l10n.collectedCharacters,
                     '${charStats['total_characters']}개'),
                 _buildStatRow(l10n.goldenCharacters,
@@ -419,12 +476,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            const Icon(Icons.warning, color: Colors.red),
-            const SizedBox(width: 8),
-            Text(l10n.deleteAllWishes),
-          ],
+        title: Text(
+          l10n.deleteAllWishes,
+          style: getLocalizedTextStyle(
+            context,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
         ),
         content: Text(
           l10n.deleteWishesConfirm,
@@ -452,12 +511,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            const Icon(Icons.warning, color: Colors.red),
-            const SizedBox(width: 8),
-            Text(l10n.deleteAllCharacters),
-          ],
+        title: Text(
+          l10n.deleteAllCharacters,
+          style: getLocalizedTextStyle(
+            context,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
         ),
         content: Text(
           l10n.deleteCharactersConfirm,
@@ -485,12 +546,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            const Icon(Icons.delete_sweep, color: Colors.red),
-            const SizedBox(width: 8),
-            Text(l10n.deleteAllData),
-          ],
+        title: Text(
+          l10n.deleteAllData,
+          style: getLocalizedTextStyle(
+            context,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
         ),
         content: Text(
           l10n.deleteAllDataConfirm,
@@ -520,7 +583,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.finalConfirmation),
+        title: Text(
+          l10n.finalConfirmation,
+          style: getLocalizedTextStyle(
+            context,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -624,7 +695,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               context: context,
               barrierDismissible: false,
               builder: (context) => AlertDialog(
-                title: const Text('✅ 완료'),
+                title: Text(
+                  '완료',
+                  style: getLocalizedTextStyle(
+                    context,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
                 content: Text(l10n.restartRecommended),
                 actions: [
                   TextButton(

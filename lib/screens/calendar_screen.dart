@@ -1,4 +1,5 @@
 // screens/calendar_screen.dart
+import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
@@ -100,14 +101,34 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.wishCalendar),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadWishData,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(56),
+        child: GlassmorphicContainer(
+          blur: 15,
+          opacity: 0.5,
+          color: const Color(0xFFFFB4D6),
+          borderRadius: BorderRadius.zero,
+          child: AppBar(
+            title: Text(
+              l10n.wishCalendar,
+              style: getLocalizedTextStyle(
+                context,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            actions: [
+              IconButton(
+                icon: const Icon(
+                    FluentSystemIcons.ic_fluent_arrow_clockwise_regular),
+                onPressed: _loadWishData,
+              ),
+            ],
           ),
-        ],
+        ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -262,55 +283,57 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       final locale = Localizations.localeOf(context);
                       return Container(
                         margin: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _selectedDay != null
-                                  ? '${DateFormat.MMMd(locale.languageCode == 'ko' ? 'ko_KR' : 'en_US').format(_selectedDay!)} (${DateFormat.E(locale.languageCode == 'ko' ? 'ko_KR' : 'en_US').format(_selectedDay!)}) - ${wishes.length}${locale.languageCode == 'ko' ? '개의 소원' : ' wishes'}'
-                                  : l10n.noWishesThisDay,
-                              style: getLocalizedTextStyle(
-                                context,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onSurface,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _selectedDay != null
+                                    ? '${DateFormat.MMMd(locale.languageCode == 'ko' ? 'ko_KR' : 'en_US').format(_selectedDay!)} (${DateFormat.E(locale.languageCode == 'ko' ? 'ko_KR' : 'en_US').format(_selectedDay!)}) - ${wishes.length}${locale.languageCode == 'ko' ? '개의 소원' : ' wishes'}'
+                                    : l10n.noWishesThisDay,
+                                style: getLocalizedTextStyle(
+                                  context,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            Expanded(
-                              child: wishes.isEmpty
-                                  ? Center(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.auto_awesome_outlined,
-                                            size: 48,
-                                            color: Colors.grey[400],
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            l10n.noWishesThisDay,
-                                            style: getLocalizedTextStyle(
-                                              context,
-                                              fontSize: 16,
-                                              color: Colors.grey[600],
-                                            ),
-                                          ),
-                                        ],
+                              const SizedBox(height: 12),
+                              if (wishes.isEmpty)
+                                Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.auto_awesome_outlined,
+                                        size: 48,
+                                        color: Colors.grey[400],
                                       ),
-                                    )
-                                  : ListView.builder(
-                                      itemCount: wishes.length,
-                                      itemBuilder: (context, index) {
-                                        final wish = wishes[index];
-                                        return _buildWishItem(wish);
-                                      },
-                                    ),
-                            ),
-                          ],
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        l10n.noWishesThisDay,
+                                        style: getLocalizedTextStyle(
+                                          context,
+                                          fontSize: 16,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              else
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: wishes.length,
+                                  itemBuilder: (context, index) {
+                                    final wish = wishes[index];
+                                    return _buildWishItem(wish);
+                                  },
+                                ),
+                            ],
+                          ),
                         ),
                       );
                     },
@@ -343,19 +366,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
           l10n.totalWishes,
           '$totalWishes${locale.languageCode == 'ko' ? '개' : ''}',
           Icons.auto_awesome,
-          Theme.of(context).colorScheme.primary,
+          const Color(0xFFB4A7FF), // 파스텔 퍼플
         ),
         _buildStatItem(
           l10n.fulfilledWishes,
           '$fulfilledWishes${locale.languageCode == 'ko' ? '개' : ''}',
           Icons.star,
-          Colors.amber,
+          const Color(0xFFFFB4D6), // 파스텔 핑크
         ),
         _buildStatItem(
           l10n.activeDays,
           '$activeDays${locale.languageCode == 'ko' ? '일' : ''}',
           Icons.calendar_today,
-          Colors.green,
+          const Color(0xFFA7D8FF), // 파스텔 블루
         ),
       ],
     );
